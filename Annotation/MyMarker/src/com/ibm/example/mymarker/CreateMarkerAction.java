@@ -35,6 +35,7 @@ public class CreateMarkerAction implements IEditorActionDelegate {
 			
 			IDocument doc = MyMarkerPlugin.getEditor().getDocumentProvider().getDocument(mymarker);
 			
+			// TODO Create compilation unit, etc. for parsing 
 			// TODO feed in line of code to parser to get critical pieces
 			
 		} catch (CoreException e) {

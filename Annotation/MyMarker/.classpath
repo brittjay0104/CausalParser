@@ -3,5 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/Users/bjohnson/Documents/Research_2017-2018/causal_testing/CausalParser/lib/org.eclipse.jdt.core_3.9.2.v20140114-1555.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
