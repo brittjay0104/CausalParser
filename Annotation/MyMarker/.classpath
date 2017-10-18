@@ -4,5 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/Users/bjohnson/Documents/Research_2017-2018/causal_testing/CausalParser/lib/org.eclipse.jdt.core_3.9.2.v20140114-1555.jar"/>
+	<classpathentry kind="lib" path="/Users/bjohnson/Documents/Research_2017-2018/causal_testing/CausalParser/lib/org.eclipse.jdt.junit.core-3.8.0.jar"/>
+	<classpathentry kind="lib" path="/Users/bjohnson/Documents/Research_2017-2018/causal_testing/CausalParser/lib/junit-4.3.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/math_22_buggy"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

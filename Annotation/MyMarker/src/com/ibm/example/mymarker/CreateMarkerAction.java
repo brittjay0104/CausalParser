@@ -11,6 +11,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
+import edu.umass.code_parser.Parser;
+
 public class CreateMarkerAction implements IEditorActionDelegate {
 
 	public CreateMarkerAction() {
@@ -31,9 +33,13 @@ public class CreateMarkerAction implements IEditorActionDelegate {
 			IFile file = (IFile) MyMarkerPlugin.getEditor().getEditorInput().getAdapter(IFile.class);
 			IMarker mymarker = MyMarkerFactory.createMarker(file);
 			
-			MyMarkerFactory.addAnnotation(mymarker, selection, MyMarkerPlugin.getEditor());
+			Parser parser = new Parser();
 			
-			IDocument doc = MyMarkerPlugin.getEditor().getDocumentProvider().getDocument(mymarker);
+			parser.setTestClass();
+			
+			//MyMarkerFactory.addAnnotation(mymarker, selection, MyMarkerPlugin.getEditor());
+			
+			//IDocument doc = MyMarkerPlugin.getEditor().getDocumentProvider().getDocument(mymarker);
 			
 			// TODO Create compilation unit, etc. for parsing 
 			// TODO feed in line of code to parser to get critical pieces
