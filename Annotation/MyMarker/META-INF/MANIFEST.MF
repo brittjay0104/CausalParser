@@ -6,11 +6,20 @@ Bundle-Version: 1.0.0
 Bundle-Activator: com.ibm.example.mymarker.MyMarkerPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.jdt.junit.core;bundle-version="3.8.0"
+ org.eclipse.jdt.junit.core;bundle-version="3.8.0",
+ org.eclipse.jdt.core,
+ org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Import-Package: org.eclipse.core.resources,
+Import-Package: junit.runner;version="4.12.0",
+ org.eclipse.core.resources,
  org.eclipse.jdt.core,
  org.eclipse.jface.text,
  org.eclipse.jface.text.source,
  org.eclipse.ui.texteditor
+Bundle-ClassPath: lib/junit-4.12.jar,
+ .,
+ lib/maven-shared-jar-1.2.jar,
+ lib/maven-invoker-2.1.1.jar,
+ lib/plexus-utils-3.1.0.jar,
+ lib/testng-6.11.jar

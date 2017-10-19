@@ -1,5 +1,6 @@
 package com.ibm.example.mymarker;
 
+import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -35,7 +36,7 @@ public class CreateMarkerAction implements IEditorActionDelegate {
 			
 			Parser parser = new Parser();
 			
-			parser.setTestClass();
+			parser.runTestCase();
 			
 			//MyMarkerFactory.addAnnotation(mymarker, selection, MyMarkerPlugin.getEditor());
 			
@@ -45,7 +46,10 @@ public class CreateMarkerAction implements IEditorActionDelegate {
 			// TODO feed in line of code to parser to get critical pieces
 			
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
+			System.out.println("CoreException caught!");
+			e.printStackTrace();
+		} catch (MavenInvocationException e) {
+			System.out.println("MavenInvocationException caught!");
 			e.printStackTrace();
 		}
 	}
