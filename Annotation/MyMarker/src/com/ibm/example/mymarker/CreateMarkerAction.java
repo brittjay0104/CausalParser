@@ -1,6 +1,5 @@
 package com.ibm.example.mymarker;
 
-import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -47,9 +46,6 @@ public class CreateMarkerAction implements IEditorActionDelegate {
 			
 		} catch (CoreException e) {
 			System.out.println("CoreException caught!");
-			e.printStackTrace();
-		} catch (MavenInvocationException e) {
-			System.out.println("MavenInvocationException caught!");
 			e.printStackTrace();
 		}
 	}

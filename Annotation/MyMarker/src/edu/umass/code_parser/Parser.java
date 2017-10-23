@@ -1,15 +1,8 @@
 package edu.umass.code_parser;
 
 import java.io.File;
-import java.util.Collections;
+import java.io.IOException;
 
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.InvocationResult;
-import org.apache.maven.shared.invoker.Invoker;
-import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.eclipse.core.internal.content.Util;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -17,13 +10,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
+
+import org.jacoco.core.analysis.Analyzer;
+import org.jacoco.core.analysis.CoverageBuilder;
+import org.jacoco.core.data.ExecutionDataStore;
+
 import org.junit.experimental.ParallelComputer;
 import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
 
 public class Parser {
 	
@@ -32,33 +25,62 @@ public class Parser {
 	
 	JUnitCore jUnitCore;
 	ParallelComputer computer;
+	File pluginDir;
 	
 	public Parser(){
 		jUnitCore = new JUnitCore();
 		computer = new ParallelComputer(true, true);
+	
 	}
-	
-	
-	
 	//Request request = Request.method(clazz, methodName)	
 	// TODO launch new JVM before running JUnitCore? Attach to each other? Attach profiler to get information on execution?
 
 	
-	public void runTestCase() throws CoreException, MavenInvocationException{
+	public void runTestCase() throws CoreException{
 		IProject project_broken = ResourcesPlugin.getWorkspace().getRoot().getProject("math_22_buggy");
 		//IType classFile = (IType) project.findMember("RealDistributionAbstractTest");
 	
 		IJavaProject jProject_broken = (IJavaProject) project_broken.getNature(JavaCore.NATURE_ID);
-		IType classFile_broken = (IType) jProject_broken.findType("org.apache.commons.math3.distribution.FDistributionTest");
+		IType classFile_broken = (IType) jProject_broken.findType("org.apache.commons.math3.distribution.RealDistributionAbstractTest");
 		IResource resource_broken = classFile_broken.getResource();
 		Class<?> resourceClass_broken = resource_broken.getClass();
 		
 
 		IProject project_fixed = ResourcesPlugin.getWorkspace().getRoot().getProject("math_22_fixed");
 		IJavaProject jProject_fixed = (IJavaProject) project_fixed.getNature(JavaCore.NATURE_ID);
-		IType classFile_fixed = (IType) jProject_fixed.findType("org.apache.commons.math3.distribution.FDistributionTest");
+		IType classFile_fixed = (IType) jProject_fixed.findType("org.apache.commons.math3.distribution.RealDistributionAbstractTest");
 		IResource resource_fixed = classFile_fixed.getResource();
 		Class<?> resourceClass_fixed = resource_fixed.getClass();
+		
+		ExecutionDataStore dataStore = new ExecutionDataStore();
+		CoverageBuilder builder = new CoverageBuilder();
+		
+		Analyzer analyzer = new Analyzer(dataStore, builder);
+		
+		File classFile = new File("/Users/bjohnson/eclipse-workspace/math_22_buggy/target/test-classes/org/apache/commons/math3/distribution");
+
+		try {
+			analyzer.analyzeAll(classFile);
+			
+		} catch (IOException e) {
+			System.out.println("Cannot find class file!");
+			e.printStackTrace();
+		}
+		
+		if (!dataStore.getContents().isEmpty()){
+			dataStore.getContents();				
+		} else {
+			System.out.println("Data store is empty!");
+		}
+		
+		// TODO try with import (Real...Test.class)? https://howtodoinjava.com/junit/how-to-execute-junit-testcases-with-junitcore/
+		// TODO try something that will detect junit is running (listener?) and provide methods for monitoring execution
+		
+//		ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
+//		ILaunchConfigurationType launchType = manager.getLaunchConfigurationType("org.eclipse.jdt.junit.junitLaunchConfigs");
+//		
+//		ILaunchConfigurationWorkingCopy workingCopy = launchType.newInstance(null, project_broken.getName());
+		
 		
 		// try running test(s) using Maven -- not working atm (not sure why, build failing)
 		
@@ -77,27 +99,37 @@ public class Parser {
 //			System.out.println("Build successful! Tests ran.");
 //		}
 		
-		// TODO next option = TestNG (advantage = can work with JUnit with minimal/no changes; pom.xml not needed)
-		Class<?>[] classes = {resourceClass_broken, resourceClass_fixed};
-		
-		TestListenerAdapter adapter = new TestListenerAdapter();
-		TestNG testng = new TestNG();
-		testng.setTestClasses(classes);
+		// TestNG (advantage = can work with JUnit with minimal/no changes; pom.xml not needed)
+//		Class<?>[] classes = {resourceClass_broken, resourceClass_fixed};
+//		
+//		TestListenerAdapter adapter = new TestListenerAdapter();
+//		TestNG testng = new TestNG();
+//		testng.setTestClasses(new Class<?>[] {resourceClass_broken});
+		//System.out.println(new File (testng.getOutputDirectory()));
 		
 //		testng.addExecutionListener(arg0);
 //		testng.addInvokedMethodListener(arg0);
-		testng.addListener(adapter);
+		//IInvokedMethodListener
+		//IExecutionListener
+		//ITestListener
+		//IResultListener/IResultListener2
+//		testng.addListener(adapter);
+//		
+//		testng.setJUnit(true);
+//		testng.run();
 		
-		testng.run();
+//		for (ITestResult result : adapter.getFailedTests()){
+//			if (result.isSuccess()){
+//				System.out.println("Test passed!");
+//			} else{
+//				System.out.println("Test failed!");
+//			}
+//		}
 		
 		// TODO use XML method to specify method??
 		
 		
-		
-		
-		// code below not working (says no constructor but there is; says no runnable methods but there are)
-		
-//		
+		// code below not working (says no constructor but there is; says no runnable methods but there are)	
 		
 		//Parallel among classes
 //		Result result1 = JUnitCore.runClasses(ParallelComputer.classes(), classes);
