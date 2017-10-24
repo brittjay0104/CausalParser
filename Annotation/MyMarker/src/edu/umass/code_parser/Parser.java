@@ -1,7 +1,11 @@
 package edu.umass.code_parser;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collection;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -13,11 +17,20 @@ import org.eclipse.jdt.core.JavaCore;
 
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
+import org.jacoco.core.analysis.IClassCoverage;
+import org.jacoco.core.analysis.ICounter;
+import org.jacoco.core.analysis.IMethodCoverage;
+import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.data.ExecutionDataStore;
-
+import org.jacoco.core.data.ExecutionDataWriter;
 import org.junit.experimental.ParallelComputer;
 import org.junit.runner.JUnitCore;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.JoinPoint;
+
+@Aspect
 public class Parser {
 	
 	// hashmap of variables and values
@@ -26,15 +39,36 @@ public class Parser {
 	JUnitCore jUnitCore;
 	ParallelComputer computer;
 	File pluginDir;
+	Runtime currentApp;
 	
 	public Parser(){
 		jUnitCore = new JUnitCore();
 		computer = new ParallelComputer(true, true);
+		
+		currentApp = Runtime.getRuntime();
+		currentApp.traceMethodCalls(true);
 	
 	}
-	//Request request = Request.method(clazz, methodName)	
-	// TODO launch new JVM before running JUnitCore? Attach to each other? Attach profiler to get information on execution?
 
+	@Pointcut("")
+	public void traceMethods() {
+		
+	}
+	
+	@Before("traceMethods()")
+	public void beforeTraceMethods(){
+		
+	}
+	
+	@After("traceMethods()")
+	public void afterTraceMethods(){
+		
+	}
+	
+	@Pointcut("")
+	public void traceStatements(){
+		
+	}
 	
 	public void runTestCase() throws CoreException{
 		IProject project_broken = ResourcesPlugin.getWorkspace().getRoot().getProject("math_22_buggy");
@@ -59,13 +93,52 @@ public class Parser {
 		
 		File classFile = new File("/Users/bjohnson/eclipse-workspace/math_22_buggy/target/test-classes/org/apache/commons/math3/distribution");
 
+		
 		try {
-			analyzer.analyzeAll(classFile);
+//			OutputStream output = new FileOutputStream("/Users/bjohnson//Users/bjohnson/Documents/Research_2017-2018/causal_testing/CausalParser");
+//			ExecutionDataWriter writer = new ExecutionDataWriter(output); 
+			
+			
+			int numFiles = analyzer.analyzeAll(classFile);	
+			System.out.println("Number of files: " + numFiles);
+			
+			Collection<IClassCoverage> classes = builder.getClasses();
+			// each class has id (getId()) and sourcefile name (getSourceFileName)
+			// can also get methods (getMethods(), returns IMethodCoverage)
+			
+			for (IClassCoverage coverage: classes){
+				//System.out.println("File: " + coverage.getSourceFileName() + " ID: " + coverage.getId());
+				
+				if (coverage.getSourceFileName().equals("RealDistributionAbstractTest.java")){
+					for (IMethodCoverage methCover: coverage.getMethods()){
+						ICounter count = methCover.getMethodCounter();
+						
+						if (count.getStatus() == ICounter.FULLY_COVERED){
+							System.out.println("Method Info: ");
+							System.out.println(methCover.getDesc());
+							System.out.println(methCover.getName());
+						}
+					}					
+				}
+				
+				//builder.visitCoverage(coverage);
+			}
+			
+			// from here can also access getMethodCounter, getLineCounter, getInstructionCounter
+			
+			Collection<ISourceFileCoverage> sourceFiles = builder.getSourceFiles();
+
+			//writer.visitClassExecution(executionData);
+			//dataStore.put(executionData);
+			
 			
 		} catch (IOException e) {
-			System.out.println("Cannot find class file!");
+			System.out.println("Cannot find file!");
 			e.printStackTrace();
-		}
+		} 
+		
+		
+		
 		
 		if (!dataStore.getContents().isEmpty()){
 			dataStore.getContents();				
