@@ -26,11 +26,7 @@ import org.jacoco.core.data.ExecutionDataWriter;
 import org.junit.experimental.ParallelComputer;
 import org.junit.runner.JUnitCore;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
-import org.aspectj.lang.JoinPoint;
 
-@Aspect
 public class Parser {
 	
 	// hashmap of variables and values
@@ -48,26 +44,6 @@ public class Parser {
 		currentApp = Runtime.getRuntime();
 		currentApp.traceMethodCalls(true);
 	
-	}
-
-	@Pointcut("")
-	public void traceMethods() {
-		
-	}
-	
-	@Before("traceMethods()")
-	public void beforeTraceMethods(){
-		
-	}
-	
-	@After("traceMethods()")
-	public void afterTraceMethods(){
-		
-	}
-	
-	@Pointcut("")
-	public void traceStatements(){
-		
 	}
 	
 	public void runTestCase() throws CoreException{
